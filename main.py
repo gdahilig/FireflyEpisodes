@@ -269,9 +269,9 @@ def lambda_handler(event, context):
     prevent someone else from configuring a skill that sends requests to this
     function.
     """
-    # if (event['session']['application']['applicationId'] !=
-    #         "amzn1.echo-sdk-ams.app.[unique-value-here]"):
-    #     raise ValueError("Invalid Application ID")
+    if (event['session']['application']['applicationId'] !=
+            "amzn1.ask.skill.05cab26d-b563-44bc-97a1-932fc623c36d"):
+        raise ValueError("Invalid Application ID")
 
     print("Launch type: {}".format(event['request']['type']))
 
