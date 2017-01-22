@@ -1,0 +1,39 @@
+{
+  "intents": [
+    {
+      "intent": "GetEpisodeIntent",
+      "slots": [
+        {
+          "name": "Episode",
+          "type": "LIST_OF_EPISODES"
+        }
+      ]
+    },
+    {
+      "intent": "GetAirDateIntent",
+      "slots": [
+        {
+          "name": "Episode",
+          "type": "LIST_OF_EPISODES"
+        }
+      ]
+    },
+    {
+      "intent": "YesIntent"
+    },
+    {
+      "intent": "NoIntent"
+    },
+
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+
+  ]
+}
