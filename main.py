@@ -14,6 +14,9 @@ import decimal
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 
+# --------------- Constants
+APPLICATION_ID = "amzn1.ask.skill.05cab26d-b563-44bc-97a1-932fc623c36d"
+
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -265,12 +268,10 @@ def lambda_handler(event, context):
     print("event.session.application.applicationId=" +
           event['session']['application']['applicationId'])
     """
-    Uncomment this if statement and populate with your skill's application ID to
-    prevent someone else from configuring a skill that sends requests to this
-    function.
+    Prevent someone else from configuring a skill that sends requests to this
+    function by testing for the application id.
     """
-    if (event['session']['application']['applicationId'] !=
-            "amzn1.ask.skill.05cab26d-b563-44bc-97a1-932fc623c36d"):
+    if (event['session']['application']['applicationId'] != APPLICATION_ID):
         raise ValueError("Invalid Application ID")
 
     print("Launch type: {}".format(event['request']['type']))
