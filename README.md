@@ -2,11 +2,11 @@
 Alexa skill written in python that provides Firely episode info.  
 
 ## Overview
-It supports basic voice interactions with Alexa via the "custom skill" model.  It usages a DynamoDB database to store the episode information
+It supports basic voice interactions with Alexa via the "custom skill" model.  It uses a DynamoDB database to store the episode information.
 
 Interaction model information can found in the following files:
-* slot_types.txt
 * utterances.txt
+* slot_types.txt
 
 ##main.py
 This is main code file and supports the very basic interactions with Alexa.
