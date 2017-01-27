@@ -8,6 +8,11 @@ Interaction model information can found in the following files:
 * utterances.txt
 * slot_types.txt
 
+## Example Interaction
+"Alexa, ask the Firefly Fan for episode 1"
+"Alexa, get the airdate for episode 10 from the Firefly Fan"
+"Alexa, ask the Firefly Fan to find epised 14"
+
 ##main.py
 This is main code file and supports the very basic interactions with Alexa.
 
@@ -18,13 +23,13 @@ The main lambda function that is called by the Alexa. Depending on the request t
 ###on_session_started()
 This function is called when the session first starts.
 
-###onlaunch()
+###on_launch()
 Called when the user launches the skill without specifying what they want.  Calls the get_welcome_message().
 
-###onintent()
+###on_intent()
 Called when the user specifies an intent for this skill.  Based on the intent (GetEpisodeIntent, GetAirDateIntent, NoIntent,, YesIntent) it will build the Alexa response to the user.
 
-###onsessionended()
+###on_session_ended()
 Called when the user ends the session.  Note that this function is not called when the skill returns should_end_session=true
 
 
