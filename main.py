@@ -16,6 +16,8 @@ from botocore.exceptions import ClientError
 
 # --------------- Constants
 APPLICATION_ID = "amzn1.ask.skill.05cab26d-b563-44bc-97a1-932fc623c36d"
+CARD_TITLE = "Unofficial Firefly Fan Episode List"
+SKILL_TITLE = "Firefly Fan"
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
@@ -29,7 +31,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 # --------------- Helpers that build all of the responses ----------------------
 
-def build_speechlet_response(title, output, reprompt_text, should_end_session):
+def build_speechlet_response(card_title, card_content, output, reprompt_text, should_end_session):
     return {
         'outputSpeech': {
             'type': 'PlainText',
@@ -37,8 +39,23 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
         },
         'card': {
             'type': 'Simple',
-            'title': "SessionSpeechlet - " + title,
-            'content': "SessionSpeechlet - " + output
+            'title':  card_title,
+            'content': card_content
+        },
+        'reprompt': {
+            'outputSpeech': {
+                'type': 'PlainText',
+                'text': reprompt_text
+            }
+        },
+        'shouldEndSession': should_end_session
+    }
+
+def build_speechlet_response_nocard(output, reprompt_text, should_end_session):
+    return {
+        'outputSpeech': {
+            'type': 'PlainText',
+            'text': output
         },
         'reprompt': {
             'outputSpeech': {
@@ -67,14 +84,14 @@ def get_welcome_response():
 
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the Firefly Episode List. " \
+    speech_output = "Welcome to the Unofficial Firefly Fan Episode List. " \
                     "Please tell me what episode you are interested in."
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = "Please tell me what episode you are interested in"
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        card_title, speech_output, speech_output, reprompt_text, should_end_session))
 
 def more_info_response():
     """ If we wanted to initialize the session to have some attributes we could
@@ -82,23 +99,21 @@ def more_info_response():
     """
 
     session_attributes = {}
-    card_title = "More Episode Info"
+    card_title = CARD_TITLE
     speech_output = "Please tell me what episode you are interested in."
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = "Please tell me what episode you are interested in"
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        card_title, speech_output, speech_output, reprompt_text, should_end_session))
 def handle_session_end_request():
-    card_title = "Session Ended"
-    speech_output = "Thank you for using the Firefly Episode List. " \
+    card_title = CARD_TITLE
+    speech_output = "Thank you for using the Unofficial Firefly Fan Episode List. " \
                     "Have a nice day, and a shiney tomorrow! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
-    return build_response({}, build_speechlet_response(
-        card_title, speech_output, None, should_end_session))
-
+    return build_response({}, build_speechlet_response_nocard(speech_output, None, should_end_session))
 
 def create_episide_attributes(episode):
     return {"episode": episode}
@@ -109,25 +124,28 @@ def set_episode_in_session(intent, session):
     user.
     """
 
-    card_title = intent['name']
+    card_title = CARD_TITLE
     session_attributes = {}
     should_end_session = False
     speech_output = ""
+    card_content = ""
 
     if 'Episode' in intent['slots']:
-        if 'value' not in intent['slots']['Episode']:
-            should_end_session = True
-            return
         try:
+            if 'value' not in intent['slots']['Episode']:
+                print("Error: No value provided for 'Episode'.")
+                raise ValueError("Invalid episode")
             current_episode = int(intent['slots']['Episode']['value'])
         except:
-            speech_output = "I'm not sure what episode you are asking for. " \
-                            "Please try again."
+            print("Exception handler")
+            speech_output = "I'm not sure what episode you are asking for.  " \
+                            "You can ask me by saying, " \
+                                "Get episode 1"
             reprompt_text = "I'm not sure what episode you are asking for.  " \
                             "You can ask me by saying, " \
                                 "Get episode 1"
             return build_response(session_attributes, build_speechlet_response(
-                card_title, speech_output, reprompt_text, should_end_session))
+                card_title, speech_output, speech_output, reprompt_text, should_end_session))
 
         print("current_episode: {}".format(current_episode))
         LAST_EPISODE = 14
@@ -145,10 +163,15 @@ def set_episode_in_session(intent, session):
                 episode_airdate = dictEpisode['AirDate']
                 speech_output = "Episode : " + \
                                 str(current_episode) + \
-                                ": entitled " + \
+                                ", entitled '" + \
                                 episode_title + \
-                                ": was first aired " + \
+                                "', was first aired " + \
                                 episode_airdate + "."
+                # Card info 
+                card_title = "When was Firefly episode {} aired?".format(current_episode)
+                card_content = "Episode: {} \n"\
+                               "Title: {} \n"\
+                               "Air date: {}".format(current_episode, episode_title, episode_airdate)
             elif intent_name == 'GetEpisodeIntent':
                 episode_title = dictEpisode['Title']
                 session_attributes = create_episide_attributes(current_episode)
@@ -160,19 +183,26 @@ def set_episode_in_session(intent, session):
                                 episode_title + ". " +\
                                 "Air date " + episode_airdate + ". " +\
                                 episode_synopsis
+                card_title = "Firefly Episode {}".format(current_episode)
+                card_content =  "Episode:  {}\n"         \
+                                "Title:    {}\n"         \
+                                "Airdate:  {}\n"         \
+                                "Synopsis: {}\n".format(current_episode, episode_title, episode_airdate, episode_synopsis)
             else:
                 print("Unknown intent: {}".format(intent))
         else:
-            speech_output = "Due to the short-sightedness of network television executives, the series was cancelled after episode 14.  However, the adventures of this small band of galactic outcasts continues in the feature film, Serenity. "
+            speech_output = "Due to the short-sightedness of network television executives, the series was cancelled after episode 14.  However, the adventures of this small band of galactic outcasts continues in the feature film, Serenity."
         reprompt_text = "Would you like more information for another episode?"
+        # speech_output = speech_output + ": : Please tell me another episode you are interested in or say: cancel"
     else:
         speech_output = "I'm not sure what episode you are asking for. " \
                         "Please try again."
         reprompt_text = "I'm not sure what episode you are asking for.  " \
                         "You can ask me by saying, " \
                         "Get episode 1"
+    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        card_title, card_content, speech_output, reprompt_text, should_end_session))
 
 # --------------- Events ------------------
 

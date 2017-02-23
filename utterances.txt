@@ -1,17 +1,13 @@
 GetEpisodeIntent What is episode {Episode}
 GetEpisodeIntent Get episode {Episode}
 GetEpisodeIntent Find episode {Episode}
-GetAirDateIntent What is the  airdate for episode {Episode}
-GetAirDateIntent When did episode {Episode} air
 GetEpisodeIntent What is episode {Episode}
 GetEpisodeIntent Get episode {Episode}
 GetEpisodeIntent Find episode {Episode}
+GetEpisodeIntent Episode {Episode}
+
 GetAirDateIntent What is the airdate for episode {Episode}
 GetAirDateIntent When did episode {Episode} air
-NoIntent nope
-NoIntent no
-NoIntent no thanks
-NoIntent I'll be in my bunk
-YesIntent yes
-YesIntent sure
-YesIntent shiney
+GetAirDateIntent When was episode {Episode} aired
+GetAirDateIntent What is the  airdate for episode {Episode}
+GetAirDateIntent Get the airdate for episode {Episode}
