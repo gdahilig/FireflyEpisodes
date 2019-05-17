@@ -11,7 +11,7 @@ Interaction model information can found in the following files:
 ## Example Interaction
 "Alexa, ask the Firefly Fan for episode 1"
 "Alexa, get the airdate for episode 10 from the Firefly Fan"
-"Alexa, ask the Firefly Fan to find epised 14"
+"Alexa, ask the Firefly Fan to find episode 14"
 
 ##main.py
 This is main code file and supports the very basic interactions with Alexa.
